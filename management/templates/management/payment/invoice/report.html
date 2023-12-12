@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Note PDF</title>
+    <style>
+        @page {
+            size: a4 portrait;
+
+
+
+            @frame header_frame {
+                /* Static Frame */
+                -pdf-frame-content: header_left_content;
+                left: 50pt;
+                width: 100pt;
+                top: 20pt;
+                height: 60pt;
+            }
+
+            @frame header_frame {
+                /* Static Frame */
+                -pdf-frame-content: header_content;
+                left: 150pt;
+                width: 312pt;
+                top: 20pt;
+                height: 60pt;
+            }
+
+
+            @frame content_frame { /* Content Frame */
+                left: 50pt; width: 512pt; top: 80pt; height: 800pt;
+            }
+
+            @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 822pt; height: 20pt;
+        }
+
+        }
+
+        .vtl {
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .vtc {
+            vertical-align: top;
+            text-align: center;
+        }
+
+        .vtr {
+            vertical-align: top;
+            text-align: right;
+        }
+
+        .header {
+            font-size: 12px;
+
+        }
+
+        p,
+        u {
+            font-size: 13px;
+        }
+
+        p {
+            padding-bottom: -5px;
+
+        }
+
+        td,
+        th {
+            border: .1px solid black;
+            font-size: 12px;
+
+        }
+
+        td,
+        th {
+            padding: 2px;
+            padding-bottom: -1px;
+        }
+
+        table {
+            padding-top: 0px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.no_border,
+        .no_border td,
+        .no_border tr,
+        #no_border1 td {
+            border: 0;
+            padding: 0px;
+            font-size: 13px;
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Content for Static Frame 'header_frame' -->
+
+    <div id="header_left_content">
+        <img src="http://127.0.0.1:8000/static/images/logo.png" alt="logo" width="180px">
+    </div>
+
+    <div id="header_content">
+
+        <p align="center" class="header">SUMMIT POWER LIMITED <br> {{x.office.title|upper}} </p>
+        <p class="vtc"> <u>Approval for Bill Payment</u></p>
+
+    </div>
+
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">
+       
+        <i> page
+            <pdf:pagenumber />
+            of
+            <pdf:pagecount />
+        </i>
+    </div>
+
+
+    <!-- HTML Content -->
+   
+    <div>
+        <table class="no_border">
+            <tr>
+                <td>Date: </td>
+                <td>{{x.date|date:'d/m/Y'}}</td>
+            </tr>
+            <tr>
+                <td width="10%">Reference:</td>
+                <td>{{ x.ref }}</td>
+            </tr>
+
+            <tr>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td class="vtl">Subject: </td>
+                <td class="vtl">{{x.subject}}</td>
+            </tr>
+
+        </table>
+        {% if x.approval %}
+                <p>Prior Approval detail: </p>
+                <table class="table table-sm table-bordered">
+                    <tr>
+                        <td style="width:4%">#</td>
+                <td style="width:12%">Approval No</td>
+                <td style="width:12%">Date</td>
+                        <td >Particular</td>
+                        <td style="width:12%">Amount</td>
+                        <td style="width:13%">Remark</td>
+                        
+                    </tr>
+                   
+                    <tr>
+                        <td>{{ 1 }}</td>
+                        <td class="vtl">{{ x.approval.ref }}</td>
+                        <td class="vtc">{{ x.approval.date|date:"d/m/Y" }}</td>
+                        <td class="vtl">{{ x.approval.subject }}</td>
+                        <td class="vtr">{{ x.approval.amount|floatformat:"2g" }}</td>
+                        <td class="vtl"> Approved </td>
+                        
+                    </tr>
+                   
+                </table>
+                {% endif %}
+
+
+        {% if xs2 %}
+        <br>
+
+        <table class="table">
+            <u>Invoice detail: </u>
+            <tr>
+                <td style="width:4%">#</td>
+                <td style="width:12%">Inv No</td>
+                <td style="width:12%">Date</td>
+                <td>Particular</td>
+                <td style="width:12%">Amount</td>
+                <td style="width:13%">Remark</td>
+
+            </tr>
+            {% for x2 in xs2 %}
+            <tr>
+                <td class="vtc">{{ forloop.counter }}</td>
+                <td class="vtc">{{ x2.number }}</td>
+                <td class="vtc">{{ x2.date|date:"d/m/Y" }}</td>
+                <td class="vtl">{{ x2.particular|safe }}</td>
+                <td class="vtr">{{ x2.amount |floatformat:"2g"}}</td>
+                <td class="vtl">{% if x2.remark %} {{ x2.remark }}
+                    {% else %} Recomended for Payment {% endif %} </td>
+
+
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td> {{x.space}} </td>
+                <td colspan="3">Total Amount </td>
+                <td class="vtr">{{x.amount|floatformat:"2g"}}</td>
+                <td> {{x.space}}</td>
+
+            </tr>
+            <tr>
+                <td> {{x.space}}</td>
+                <td colspan="5">In word: BDT {{x.amount_txt|title}} Only. </td>
+
+            </tr>
+
+        </table>
+        {% endif %}
+
+
+
+        <br>
+        <table class="table">
+            <u> Vendor Information: </u>
+            <tr>
+                <td style="width: 10% ;" class="vtl">
+                    BIN <br> TIN
+                </td>
+                <td style="width: 30% ;" class="vtl">
+                    {{x.vendor.bin}} <br>{{x.vendor.tin}}
+                </td>
+                <td style="width: 20% ;">
+                    A/C Name <br> A/C Number <br> Bank Name <br> Rounting/ Branch
+                </td>
+                <td>
+                    {{x.account.name}} <br>{{x.account.number}} <br> {{x.account.bank}} <br>
+                    {{x.account.routing}}/{{x.account.branch}}
+                </td>
+            </tr>
+
+        </table>
+
+
+        <p>{{x.recommendation}}</p>
+
+        {% if x.advance == 0 and x.security == 0 %}
+
+        <p> Recommended for bill payment of Invoiced Amount BDT {{x.pamount|floatformat:"2g" }}
+            ({{x.pamount_txt|title}})
+            {% if x.pay_to_company %}in the name of Company {% endif %}</p>
+
+        {% else %}
+        
+        <table class="table table-sm table-bordered">
+            <caption><u>Payment recommendation:</u></caption>
+            {% if x.advance > 0 %}
+            <tr>
+                <td class="vtc" style="width: 5%;"> 1</td>
+                <td>Advance Paid</td>
+                <td class="vtr" style="width: 15%;">{{x.advance|floatformat:"2g"}}</td>
+
+            </tr>
+            {% endif%}
+            {% if x.security > 0 %}
+            <tr>
+                <td class="vtc">2</td>
+                <td>Deducted Amount for undone work</td>
+                <td class="vtr">{{x.security|floatformat:"2g"}}</td>
+
+            </tr>
+            {% endif%}
+            {% if x.pamount > 0 %}
+            <tr>
+                <td class="vtc">{% if x.security > 0 %} 3 {% else %} 2 {% endif%} </td>
+                <td>Recomended for payment {% if x.pay_to_company %}in the name of Company {% endif %}</td>
+                <td class="vtr">{{x.pamount|floatformat:"2g"}}</td>
+
+            </tr>
+            <tr>
+                <td>{{x.space}}</td>
+                <td colspan="2"> Recomended amount in Word: {{x.pamount_txt|title }}</td>
+
+            </tr>
+
+
+           
+            {% endif%}
+
+        </table>
+        {% if x.pamount <= 0 %} <p>Recomended for bill adjustment of the comapny.</p>
+
+
+            {% endif%}
+
+            {% endif %}
+
+
+<br>
+<br>
+           
+<p>
+            {% if  xx %}
+          
+            <img src="http://127.0.0.1:8000/static/images/signature.png" alt="sign.jpg" width="70px">
+            {% endif %}
+            <br>
+            _______________________ <br>
+            Santosh Barai <br> 
+            Asst General Manager </p>
+            <p><u>General Manager(O&M)</u></p>
+
+    </div>
+</body>
+
+</html>

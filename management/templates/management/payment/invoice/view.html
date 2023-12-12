@@ -1,0 +1,201 @@
+{% extends 'management/base.html'%}
+{% load static %}
+{% block head %} {{title}} {% endblock %}
+
+{% block content %}
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{% url 'payment:invoice_report' x.id %}" target="_blank" style="min-width:100px;"
+    class="btn btn-success m-1">PDF</a>
+    <a href="{% url 'payment:invoice_home' %}" style="min-width:100px;" class="btn btn-dark m-1">Back</a>
+    
+</div>
+
+
+<div class="d-grid gap-2">
+    
+        <div class=" card " >
+            <div class="card-body">
+                       
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td width="10%">Reference</td>
+                        <td>{{x.ref }}</td>
+                    </tr>
+                    <tr>
+                        <td>Date</td>
+                        <td>{{x.date|date:'d/m/Y'}}</td>
+                    </tr>
+                    <tr>
+                        <td class="vtc">Subject: </td>
+                        <td class="vtl">{{x.subject}}</td>
+                    </tr>
+                </table>
+
+                <hr>
+          
+
+                {% if x.approval %}
+                <p>Prior Approval detail: </p>
+                <table class="table table-sm table-bordered">
+                    <tr>
+                        <td style="width:5%">#</td>
+                        <td style="width:10%;">Inv No</td>
+                        <td style="width:10%;">Date</td>
+                        <td style="width:55%">Particular</td>
+                        <td style="width:10%;">Amount</td>
+                        <td style="width:10%;">Remark</td>
+                        
+                    </tr>
+                   
+                    <tr>
+                        <td>1</td>
+                        <td>{{ x.approval.ref }}</td>
+                        <td>{{ x.approval.date }}</td>
+                        <td>{{ x.approval.subject }}</td>
+                        <td>{{ x.approval.amount }}</td>
+                        <td> Approved </td>
+                        
+                    </tr>
+                   
+                </table>
+                {% endif %}
+
+                <hr>
+
+              
+                {% if xs2 %}
+                <p>Invoice detail: </p>
+                <table class="table table-sm table-bordered">
+                    <tr>
+                        <td style="width:5%">#</td>
+                        <td style="width:10%">Inv No</td>
+                        <td style="width:10%">Date</td>
+                        <td>Particulars</td>
+                        <td style="width:10%">Amount</td>
+                        <td style="width:10%">Remark</td>
+                        {% if view %}
+                        <td style="width:5%">Action</td>
+                        {% endif %}
+                    </tr>
+                    {% for x2 in xs2 %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ x2.number }}</td>
+                        <td>{{ x2.date }}</td>
+                        <td>{{ x2.particular|safe }}</td>
+                        <td>{{ x2.amount }}</td>
+                        <td>
+                            {{ x2.remark }}
+                        </td>
+                   
+                    </tr>
+
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td colspan="3">Total Amount </td>
+                        <td>{{x.amount}}</td>
+                        <td></td>
+                        {% if view %}
+                        <td></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td></td>
+                        {% if view %}
+                        <td colspan="6">In word: {{x.amount_txt|title}} </td>
+                        {% else %}
+                        <td colspan="5">In word: {{x.amount_txt|title}} </td>
+                        {% endif %}
+
+
+                    </tr>
+
+                </table>
+                {% endif %}
+
+                <br>
+   
+
+    <u>Vendor Information:</u>
+
+    <table class="table table-sm table-bordered">
+        <tr>
+            <td style="width: 10% ;">
+                BIN <br> TIN
+            </td>
+            <td style="width: 20% ;">
+                {{x.vendor.bin}} <br>{{x.vendor.tin}}
+            </td>
+            <td style="width: 20% ;">
+                A/C Name  <br> A/C Number <br> Bank Name <br> Rounting/ Branch
+            </td>
+            <td>
+                {{x.account.name}} <br>{{x.account.number}} <br> {{x.account.bank}} <br> {{x.account.routing}}/{{x.account.branch}}
+            </td>
+        </tr>
+            
+    </table>
+  
+<br>
+            <p>{{x.recommendation}}</p>
+                <br>
+                {% if x.advance == 0 and x.security == 0 %}
+
+                <p> Recommended for bill payment of Invoiced Amount BDT {{x.pamount}} ({{x.pamount_txt|title}})
+                    {% if x.pay_to_company %} in the name of Company {% endif %} </p>
+
+                {% else %}
+                <p>Payment recommendation:</p>
+                <table class="table table-sm table-bordered">
+                    {% if x.advance > 0 %}
+                    <tr>
+                        <td style="width: 5%;"> 1</td>
+                        <td>Advance Paid</td>
+                        <td style="width: 15%;">{{x.advance}}</td>
+                    </tr>
+                    {% endif%}
+                    {% if x.security > 0 %}
+                    <tr>
+                        <td>2</td>
+                        <td>Security Amount</td>
+                        <td>{{x.security}}</td>
+                    </tr>
+                    {% endif%}
+
+                    {% if x.pamount > 0 %}
+                    <tr>
+                        <td class="vtc">
+                            {% if x.security > 0 %}
+                            3
+                            {% else %}
+                            2
+                            {% endif%}
+                        </td>
+                        <td>Recomended for payment
+                            {% if x.pay_to_company %}
+                            in the name of Company
+                            {% endif %}
+                        </td>
+                        <td class="vtr">{{x.pamount|floatformat:"2g"}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{x.space}}</td>
+                        <td colspan="2"> Recomended amount in Word: {{x.pamount_txt|title }}</td>
+                    </tr>
+                    <br>
+                    {% endif %}
+                </table>
+                {% if x.pamount <= 0 %} <br />
+                <p>Recomended for bill adjustment of the comapny.</p>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    
+    
+</div>
+
+
+{% endblock %}
