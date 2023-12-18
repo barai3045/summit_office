@@ -7,6 +7,7 @@ import math
 from io import BytesIO
 from num2words import num2words
 from xhtml2pdf import pisa
+from hr.funs import EmpOffice, EmpTitle
 from management.funs import FiscalYearNumber, FiscalYearText, link_callback
 
 from management.models import Approval, Office, PaymentNote, PaymentNoteApproval, PaymentNoteInvoice, PaymentOthers, PaymentOthersItem, Quotation, QuotationItem, VendorAccount
@@ -47,13 +48,10 @@ def invoice_view(request, pk):
         if not inv.paid:
             inv_amount = inv_amount + inv.amount
 
-    office = ""
-    parent = get_object_or_404(Office, pk=note.office.parent)
-    if parent:
-        office=f"{parent.stitle}/"
-    
-    note.ref = f"{office}{note.office.stitle}/Bill/{note.ref()}"
-
+    plant = EmpOffice(note.raise_by.id, note.date)
+    office = 'SPL'
+    note.ref = f"{office}/{plant.stitle}/Bill/{note.ref()}"
+    note.plant = plant
     note.amount = inv_amount
     note.amount_txt = num2words(inv_amount, lang='en_IN')
     note.pamount = inv_amount-float(note.advance+note.security)
@@ -95,13 +93,13 @@ def invoice_report(request, pk):
         if not inv.paid:
             inv_amount = inv_amount + inv.amount
     
-    office = ""
-    parent = get_object_or_404(Office, pk=note.office.parent)
-    if parent:
-        office=f"{parent.stitle}/"
+    plant = EmpOffice(note.raise_by.id, note.date)
+    office = 'SPL'
+    note.ref = f"{office}/{plant.stitle}/Bill/{note.ref()}"
+    note.plant = plant
 
-    note.ref = f"{office}{note.office.stitle}/Bill/{note.ref()}"
-
+    note.raise_by.title = EmpTitle(note.raise_by.id, note.date)
+    note.submitted_to.title = EmpTitle(note.submitted_to.id, note.date)
     note.space = ""
     note.amount = inv_amount
     note.amount_txt = num2words(inv_amount, lang='en_IN')
@@ -205,12 +203,14 @@ def others_view(request, pk):
     payment.gross_amount = math.trunc(gross_amount)
     gross_amount_txt = num2words(math.trunc(gross_amount), lang='en_IN')
 
-    office = ""
-    parent = get_object_or_404(Office, pk=payment.office.parent)
-    if parent:
-        office=f"{parent.stitle}/"
+    plant = EmpOffice(payment.raise_by.id, payment.date)
+    office = 'SPL'
+    payment.ref = f"{office}/{plant.stitle}/Bill/{payment.ref()}"
+    payment.plant = plant
 
-    payment.ref = f"{office}{payment.office.stitle}/Payment/{FiscalYearText(payment.date)}/{i:03d}"
+    payment.raise_by.title = EmpTitle(payment.raise_by.id, payment.date)
+    payment.submitted_to.title = EmpTitle(payment.submitted_to.id, payment.date)
+
     payment.salutation = f"Submitted for your kind approval for payment of amount BDT {format(gross_amount, '.2f')} (BDT {gross_amount_txt} only) for above stated purpose"
 
     payment.account = get_object_or_404(VendorAccount, vendor=payment.vendor.id)
@@ -263,12 +263,13 @@ def others_report(request, pk):
     payment.gross_amount = math.trunc(gross_amount)
     payment.gross_amount_txt = num2words(math.trunc(gross_amount), lang='en_IN')
 
-    office = ""
-    parent = get_object_or_404(Office, pk=payment.office.parent)
-    if parent:
-        office=f"{parent.stitle}/"
+    plant = EmpOffice(payment.raise_by.id, payment.date)
+    office = 'SPL'
+    payment.ref = f"{office}/{plant.stitle}/Bill/{payment.ref()}"
+    payment.plant = plant
 
-    payment.ref = f"{office}{payment.office.stitle}/Payment/{FiscalYearText(payment.date)}/{i:03d}"
+    payment.raise_by.title = EmpTitle(payment.raise_by.id, payment.date)
+    payment.submitted_to.title = EmpTitle(payment.submitted_to.id, payment.date)
 
     payment.account = get_object_or_404(VendorAccount, vendor=payment.vendor.id)
 

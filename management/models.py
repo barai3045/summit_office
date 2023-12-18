@@ -287,8 +287,9 @@ class PaymentNote(models.Model):
     security = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, default=1)
     received_on = models.DateField()
-    office = models.ForeignKey(Office, on_delete=models.CASCADE, default=101)
-
+    raise_by = models.ForeignKey(Employee, on_delete=models.CASCADE, default='99078', related_name="payment_raised_by")
+    submitted_to = models.ForeignKey(Employee, on_delete=models.CASCADE, default='99090', related_name="payment_submiited_to")
+    
     def ref(self):
         notes = PaymentNote.objects.all().order_by('id')
     
@@ -349,8 +350,21 @@ class PaymentOthers(models.Model):
     conclusion = models.TextField(blank=True, null=True)
     vendor = models.ForeignKey(Vendor, models.CASCADE)
     signed = models.BooleanField(default=False)
-    office = models.ForeignKey(Office, on_delete=models.CASCADE, default=101)
+    raise_by = models.ForeignKey(Employee, on_delete=models.CASCADE, default='99078', related_name="others_raised_by")
+    submitted_to = models.ForeignKey(Employee, on_delete=models.CASCADE, default='99090', related_name="others_submiited_to")
 
+    def ref(self):
+        notes = PaymentOthers.objects.all().order_by('id')
+    
+        ayear = FiscalYearNumber(self.date)
+        fiscalYear = FiscalYearText(self.date)
+
+        i = 0
+        for y in notes.filter(id__lte=self.id):
+            if ayear == FiscalYearNumber(y.date):
+                i = i+1
+        return f"{fiscalYear}/{i:03d}"
+    
     def __str__(self):
         return "%s %s" % (self.date, self.subject)
 

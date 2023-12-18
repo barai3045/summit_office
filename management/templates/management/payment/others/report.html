@@ -111,7 +111,7 @@
     
     <div id="header_content">
 
-        <p align="center" class="header">SUMMIT POWER LIMITED <br> {{x.office.title|upper}} </p>
+        <p align="center" class="header">SUMMIT POWER LIMITED <br> {{x.plant.title|upper}} </p>
         <p class="vtc"> <u>Approval for Bill Payment</u></p>
 
     </div>
@@ -231,14 +231,16 @@
 
     <p> <br> Submitter for your kind approval for payment of amount BDT {{x.gross_amount |floatformat:"2g" }} (BDT
         {{x.gross_amount_txt|title }} only) for above stated purpose</p>
-        {% if x.signed %}
-            <img src="http://127.0.0.1:8000/static/images/signature.png" alt="sign.jpg" width="70px">
-            {% else %}
+        
+            <img src="http://127.0.0.1:8000/static/images/signature.png" alt="sign iamge" width="70px">
+            
             <br><br>
-            {% endif %} <p>
+            <p>
     _______________________ <br>
-        Santosh Barai <br> Asst. General Manager </p>
-    <p><u>General Manager(O&M)</u></p>
+        {{x.raise_by.name}} <br> 
+        {{x.raise_by.title.title}} </p>
+    
+        <p><u>{{x.submitted_to.title.title}}</u></p>
 
 
 

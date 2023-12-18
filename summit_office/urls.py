@@ -13,5 +13,7 @@ urlpatterns = [
     path('', include("hr.employee.urls", namespace="employee")),
     path('api/management/', include("management.urls", namespace="management")),
     path('api/hr/', include("hr.urls", namespace="hr")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

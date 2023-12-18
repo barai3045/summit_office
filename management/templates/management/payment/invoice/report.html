@@ -110,7 +110,7 @@
 
     <div id="header_content">
 
-        <p align="center" class="header">SUMMIT POWER LIMITED <br> {{x.office.title|upper}} </p>
+        <p align="center" class="header">SUMMIT POWER LIMITED <br> {{x.plant.title|upper}} </p>
         <p class="vtc"> <u>Approval for Bill Payment</u></p>
 
     </div>
@@ -307,9 +307,11 @@
             {% endif %}
             <br>
             _______________________ <br>
-            Santosh Barai <br> 
-            Asst General Manager </p>
-            <p><u>General Manager(O&M)</u></p>
+            {{x.raise_by.name}} <br> 
+            {{x.raise_by.title.title}} <br> 
+            </p>
+            
+            <p><u>{{x.submitted_to.title.title}}</u></p>
 
     </div>
 </body>

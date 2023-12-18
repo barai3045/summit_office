@@ -7,8 +7,7 @@
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
     <a href="{% url 'payment:others_report' x.id %}" target="_blank" style="min-width:100px;"
     class="btn btn-success m-1">PDF</a>
-    <a href="{% url 'payment:others_home' %}" style="min-width:100px;" class="btn btn-dark m-1">Back</a>
-    
+    <a href="{% url 'payment:others_home' %}" style="min-width:100px;" class="btn btn-dark m-1">Back</a>   
 </div>
 
 <div class="d-grid gap-2 ">
@@ -127,8 +126,20 @@
             <br>
             <p>{{x.salutation}}</p>
     
-        </div>
-    </div>
+        
+    
+    <img src="http://127.0.0.1:8000/static/images/signature.png" alt="sign iamge" width="70px">
+            
+    <br><br>
+    <p>
+_______________________ <br>
+{{x.raise_by.name}} <br> 
+{{x.raise_by.title.title}} </p>
+
+<p><u>{{x.submitted_to.title.title}}</u></p>
+</div>
+</div>
+
 </div>
 
 
